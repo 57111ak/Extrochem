@@ -30,7 +30,7 @@ function ParentComponent() {
 
     try {
       await dispatch(fetchMolecules(formData)).unwrap();
-      setActiveTab("RESULTS");
+      setActiveTab("RESULTS"); // Switch to RESULTS tab after successful fetch
     } catch (error) {
       console.error("Failed to generate molecules:", error);
     }

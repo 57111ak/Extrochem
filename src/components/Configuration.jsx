@@ -46,7 +46,7 @@ function Configuration({ pdbFiles, onRun }) {
     setIsLoading(true);
     setError(null);
     const formData = new FormData();
-    
+
     pdbFiles.forEach((file) => formData.append("protein_file", file));
     formData.append("num_molecules", numMolecules);
 
@@ -57,7 +57,7 @@ function Configuration({ pdbFiles, onRun }) {
 
     try {
       await dispatch(fetchMolecules(formData)).unwrap();
-      onRun();
+      onRun(); // Call onRun to switch to RESULTS tab
     } catch (err) {
       setError("Failed to fetch molecules. Check inputs and try again.");
       console.error(err);
@@ -209,9 +209,9 @@ function Configuration({ pdbFiles, onRun }) {
       <div className="flex justify-center mt-6">
         <button
           onClick={handleRun}
-          className={`px-4 py-2 border-[1px] border-zinc-500 rounded-full font-light text-sm uppercase hover:bg-white hover:text-black transition `}
+          className={`px-4 py-2 border-[1px] border-zinc-500 rounded-full font-light text-sm uppercase hover:bg-white hover:text-black transition`}
         >
-    {isLoading ? 'Running...' : 'RUN'}
+          {isLoading ? "Running..." : "RUN"}
         </button>
       </div>
     </div>
