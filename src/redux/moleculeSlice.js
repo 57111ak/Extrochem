@@ -3,11 +3,16 @@ import axios from 'axios';
 
 export const fetchMolecules = createAsyncThunk(
   'molecules/fetchMolecules',
-  async (config, { rejectWithValue }) => {
+  async (formData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
         'http://localhost:8000/generate_molecules/',
-        config 
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
       );
       return response.data;
     } catch (error) {

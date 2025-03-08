@@ -21,20 +21,21 @@ function Configuration({ pdbFiles, onRun }) {
 
   const dispatch = useDispatch();
 
-  const handleRun = () => {
-    const requestData = {
-      pdbFiles: pdbFiles.length > 0 ? pdbFiles : ["No files uploaded"], // Ensure files are sent
-      config: {
-        mw: settings.mw,
-        hbd: settings.hbd,
-        hba: settings.hba,
-        logP: settings.logP,
-      },
-    };
+  const handleRun = async () => {
+    const formData = new FormData();
+    pdbFiles.forEach((file) => {
+      formData.append('protein_file', file); // Append each PDB file
+    });
+    formData.append('num_molecules', 10); // Adjust as necessary
+    formData.append('logp_min', settings.logP[0]); // Append logP min
+    formData.append('logp_max', settings.logP[1]); // Append logP max
 
-    console.log("Sending to backend:", requestData); 
-    onRun(); // Call the onRun function passed from ParentComponent
-    dispatch(fetchMolecules(requestData));
+    try {
+      await dispatch(fetchMolecules(formData)).unwrap();
+      onRun(); // Call the onRun function passed from ParentComponent
+    } catch (error) {
+      console.error("Failed to fetch molecules:", error);
+    }
   };
 
   const properties = [
@@ -61,25 +62,12 @@ function Configuration({ pdbFiles, onRun }) {
             />
           ))}
         </div>
-        {/* <div className="p-4 rounded-lg ">
-          <h2 className="text-lg font-semibold mb-2">Atom-type Counts</h2>
-          {properties.slice(4).map((prop) => (
-            <PropertyInput
-              key={prop.key}
-              label={prop.label}
-              keyName={prop.key}
-              range={prop.range}
-              settings={settings}
-              handleChange={handleChange}
-            />
-          ))}
-        </div> */}
       </div>
       <div className="flex justify-center mt-6">
         <button
           onClick={handleRun}
           className={`px-4 py-2 border-[1px] border-zinc-500 rounded-full font-light text-sm uppercase hover:bg-white hover:text-black transition `}
-          >
+        >
           RUN
         </button>
       </div>

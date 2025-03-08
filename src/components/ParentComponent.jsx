@@ -12,10 +12,11 @@ function ParentComponent() {
     const response = await fetch("http://localhost:8000/generate_molecules/", {
       method: "POST",
       headers: {
-        "Accept": "application/x-ndjson",
+        "Content-Type": "application/json", // Updated header
+        "Accept": "application/json", // Updated to accept JSON
         "Cache-Control": "no-cache",
       },
-      body: new URLSearchParams({
+      body: JSON.stringify({ // Updated to send JSON
         protein_file: pdbFiles[0], // Assuming the first file is used
         num_molecules: 10, // Adjust as necessary
       }),
