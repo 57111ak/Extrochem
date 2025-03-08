@@ -52,11 +52,11 @@ function MoleculeTable() {
 
   // Descriptor labels mapping
   const descriptorLabels = {
-    LogP: "(logp_min, logp_max)",
-    MolecularWeight: "(mw_min, mw_max)",
-    HBondDonors: "(hbd_min, hbd_max)",
-    HBondAcceptors: "(hba_min, hba_max)",
-    TopoPSA: "(tpsa_min, tpsa_max)",
+    LogP: "LogP",
+    MolecularWeight: "Molecular Weight",
+    HBondDonors: "H-Bond Donors",
+    HBondAcceptors: "H-Bond Acceptors",
+    TopoPSA: "Topo PSA",
   };
 
   // Utility function to extract top descriptors
