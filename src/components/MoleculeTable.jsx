@@ -1,9 +1,3 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import { Stage } from "ngl";
-import { GoEyeClosed } from "react-icons/go";
-import { RxEyeOpen } from "react-icons/rx";
-
 function MoleculeTable() {
   const moleculesState = useSelector((state) => state.molecules);
   const [selectedPdb, setSelectedPdb] = useState(null);
@@ -50,6 +44,16 @@ function MoleculeTable() {
     return <p>No molecules generated yet.</p>;
   }
 
+  // Utility function to extract top descriptors
+  const getTopDescriptors = (descriptors, count = 5) => {
+    return Object.entries(descriptors)
+      .sort(([, valueA], [, valueB]) => valueB - valueA) // Sort by value (descending)
+      .slice(0, count); // Take the top `count` entries
+  };
+
+  // Get dynamic headers based on the first molecule's descriptors
+  const dynamicHeaders = getDynamicHeaders(moleculesState);
+
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">Generated Molecules</h2>
@@ -57,33 +61,43 @@ function MoleculeTable() {
         <thead>
           <tr className="text-center bg-zinc-700 text-white">
             <th className="border border-zinc-500 p-2">SMILES</th>
-            <th className="border border-zinc-500 p-2">Num Atoms</th>
+            {dynamicHeaders.map((header, index) => (
+              <th key={index} className="border border-zinc-500 p-2">
+                {header}
+              </th>
+            ))}
             <th className="border border-zinc-500 p-2">Docking Score</th>
             <th className="border border-zinc-500 p-2">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {moleculesState.data.map((molecule, index) => (
-            <tr key={index} className="text-center">
-              <td className="border-r border-t border-b border-zinc-500 p-2">
-                {molecule.smiles || "N/A"}
-              </td>
-              <td className="border border-zinc-500 p-2">
-                {molecule.NumAtoms || "N/A"}
-              </td>
-              <td className="border border-zinc-500 p-2">
-                {molecule.docking_score || "N/A"}
-              </td>
-              <td className="border-l border-b border-t border-zinc-500 p-2">
-                <button
-                  onClick={() => handleViewClick(molecule.docked_pdb_path)}
-                  className="hover:text-blue-500"
-                >
-                  <RxEyeOpen />
-                </button>
-              </td>
-            </tr>
-          ))}
+          {moleculesState.data.map((molecule, index) => {
+            const topDescriptors = getTopDescriptors(molecule.descriptors);
+
+            return (
+              <tr key={index} className="text-center">
+                <td className="border-r border-t border-b border-zinc-500 p-2">
+                  {molecule.smiles || "N/A"}
+                </td>
+                {topDescriptors.map(([key, value], idx) => (
+                  <td key={idx} className="border border-zinc-500 p-2">
+                    {value || "N/A"}
+                  </td>
+                ))}
+                <td className="border border-zinc-500 p-2">
+                  {molecule.docking_score || "N/A"}
+                </td>
+                <td className="border-l border-b border-t border-zinc-500 p-2">
+                  <button
+                    onClick={() => handleViewClick(molecule.docked_pdb_path)}
+                    className="hover:text-blue-500"
+                  >
+                    <RxEyeOpen />
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 
