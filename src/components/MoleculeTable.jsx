@@ -35,16 +35,6 @@ function MoleculeTable() {
     }
   }, [selectedPdb]);
 
-  const getDynamicHeaders = (moleculesState) => {
-    if (moleculesState.data.length === 0) return [];
-  
-    // Extract the top 5 descriptors from the first molecule
-    const firstMolecule = moleculesState.data[0];
-    const topDescriptors = getTopDescriptors(firstMolecule.descriptors);
-  
-    // Generate header names dynamically
-    return topDescriptors.map(([key]) => key);
-  };
   // Show loading message if data is still being fetched
   if (moleculesState.loading && moleculesState.data.length === 0) {
     return <p>Loading molecules...</p>;
@@ -60,17 +50,31 @@ function MoleculeTable() {
     return <p>No molecules generated yet.</p>;
   }
 
+  // Utility function to extract top descriptors
   const getTopDescriptors = (descriptors, count = 5) => {
     return Object.entries(descriptors)
       .sort(([, valueA], [, valueB]) => valueB - valueA) // Sort by value (descending)
       .slice(0, count); // Take the top `count` entries
   };
-  const dynamicHeaders = getDynamicHeaders(moleculesState);
+
+  // Get dynamic headers based on the first molecule's descriptors
+  const dynamicHeaders = moleculesState.data.length > 0
+    ? getTopDescriptors(moleculesState.data[0].descriptors).map(([key]) => key)
+    : [];
+
+  // Utility function to format float values
+  const formatValue = (value) => {
+    if (typeof value === "number") {
+      return value.toFixed(2); // Format to 2 decimal places
+    }
+    return value || "N/A"; // Return "N/A" for undefined or null values
+  };
+
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">Generated Molecules</h2>
       <table className="w-full border-collapse">
-      <thead>
+        <thead>
           <tr className="text-center bg-zinc-700 text-white">
             <th className="border border-zinc-500 p-2">SMILES</th>
             {dynamicHeaders.map((header, index) => (
@@ -83,7 +87,7 @@ function MoleculeTable() {
           </tr>
         </thead>
         <tbody>
-        {moleculesState.data.map((molecule, index) => {
+          {moleculesState.data.map((molecule, index) => {
             const topDescriptors = getTopDescriptors(molecule.descriptors);
 
             return (
@@ -93,11 +97,11 @@ function MoleculeTable() {
                 </td>
                 {topDescriptors.map(([key, value], idx) => (
                   <td key={idx} className="border border-zinc-500 p-2">
-                    {value || "N/A"}
+                    {formatValue(value)} {/* Format the value */}
                   </td>
                 ))}
                 <td className="border border-zinc-500 p-2">
-                  {molecule.docking_score || "N/A"}
+                  {formatValue(molecule.docking_score)} {/* Format docking score */}
                 </td>
                 <td className="border-l border-b border-t border-zinc-500 p-2">
                   <button
