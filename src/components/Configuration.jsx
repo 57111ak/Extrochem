@@ -41,7 +41,7 @@ function Configuration({ pdbFiles, onRun }) {
     pdbFiles.forEach((file) => {
       formData.append("protein_file", file); // Append each PDB file
     });
-    formData.append("num_molecules", 10); // Adjust as necessary
+    formData.append("num_molecules", 10); 
     formData.append("logp_min", settings.logP[0]); // Append logP min
     formData.append("logp_max", settings.logP[1]); // Append logP max
 

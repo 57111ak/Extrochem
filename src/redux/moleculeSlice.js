@@ -27,9 +27,12 @@ export const fetchMolecules = createAsyncThunk(
         lines.forEach((line) => {
           try {
             const molecule = JSON.parse(line);
-            molecules.push(molecule);
-            // Dispatch an action to update the Redux state incrementally
-            dispatch(addMolecule(molecule));
+
+            // Dispatch only if the molecule status is "success"
+            if (molecule.status === "success") {
+              console.log("Molecule added:", molecule);
+              dispatch(addMolecule(molecule));
+            }
           } catch (e) {
             console.error("Error parsing molecule:", e);
           }
@@ -43,7 +46,6 @@ export const fetchMolecules = createAsyncThunk(
   }
 );
 
-// Add a new action to handle incremental updates
 const moleculesSlice = createSlice({
   name: 'molecules',
   initialState: {
@@ -53,7 +55,24 @@ const moleculesSlice = createSlice({
   },
   reducers: {
     addMolecule: (state, action) => {
-      state.data.push(action.payload);
+      const molecule = action.payload;
+
+      // Flatten descriptors for easier access in the table
+      const flattenedMolecule = {
+        ...molecule,
+        NumAtoms: molecule.descriptors?.NumAtoms || 0,
+        docking_score: molecule.docking_score || null,
+        docked_pdb_path: molecule.docked_pdb_path || null,
+      };
+
+      // Check if the molecule already exists in the state
+      const exists = state.data.some(
+        (existingMolecule) => existingMolecule.molecule_number === molecule.molecule_number
+      );
+
+      if (!exists) {
+        state.data.push(flattenedMolecule);
+      }
     },
   },
   extraReducers: (builder) => {

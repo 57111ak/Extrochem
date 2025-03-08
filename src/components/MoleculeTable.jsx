@@ -41,49 +41,51 @@ function MoleculeTable() {
   }, [selectedPdb]);
 
   if (moleculesState.loading) return <p>Loading molecules...</p>;
-  if (moleculesState.error) return <p>Error: {moleculesState.error}</p>;
+if (moleculesState.error) return <p>Error: {moleculesState.error}</p>;
 
-  return (
-    <div>
-      <h2 className="text-xl font-bold mb-4">Generated Molecules</h2>
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="text-center bg-zinc-700 text-white">
-            <th className="border border-zinc-500 p-2">SMILES</th>
-            <th className="border border-zinc-500 p-2">Num Atoms</th>
-            <th className="border border-zinc-500 p-2">Docking Score</th>
-            <th className="border border-zinc-500 p-2">Actions</th>
+return (
+  <div>
+    <h2 className="text-xl font-bold mb-4">Generated Molecules</h2>
+    <table className="w-full border-collapse">
+      {/* Table headers */}
+      <thead>
+        <tr className="text-center bg-zinc-700 text-white">
+          <th className="border border-zinc-500 p-2">SMILES</th>
+          <th className="border border-zinc-500 p-2">Num Atoms</th>
+          <th className="border border-zinc-500 p-2">Docking Score</th>
+          <th className="border border-zinc-500 p-2">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {moleculesState.data.map((molecule, index) => (
+          <tr key={index} className="text-center">
+            <td className="border-r border-t border-b border-zinc-500 p-2">{molecule.smiles}</td>
+            <td className="border border-zinc-500 p-2">{molecule.NumAtoms}</td>
+            <td className="border border-zinc-500 p-2">{molecule.docking_score}</td>
+            <td className="border-l border-b border-t border-zinc-500 p-2">
+              <button onClick={() => handleViewClick(molecule.docked_pdb_path)}>
+                <RxEyeOpen />
+              </button>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {moleculesState.data.map((molecule, index) => (
-            <tr key={index} className="text-center">
-              <td className="border-r border-t border-b border-zinc-500 p-2">{molecule.smiles}</td>
-              <td className="border border-zinc-500 p-2">{molecule.descriptors.NumAtoms}</td>
-              <td className="border border-zinc-500 p-2">{molecule.docking_score}</td>
-              <td className="border-l border-b border-t border-zinc-500 p-2">
-                <button onClick={() => handleViewClick(molecule.docked_pdb_path)}>
-                  <RxEyeOpen />
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        ))}
+      </tbody>
+    </table>
 
-      {showModal && (
-        <div className="fixed inset-0 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="backdrop-blur-3xl bg-black p-6 rounded-lg w-[80%] max-w-[800px] h-[600px] relative">
-            <button onClick={closeModal} className="absolute top-2 right-2">
-              <GoEyeClosed />
-            </button>
-            <h3 className="text-lg font-semibold mb-4">PDB Viewer</h3>
-            <div ref={viewerRef} style={{ width: "100%", height: "calc(100% - 60px)" }}></div>
-          </div>
+    {/* Modal for PDB viewer */}
+    {showModal && (
+      <div className="fixed inset-0 bg-opacity-50 flex justify-center items-center z-50">
+        <div className="backdrop-blur-3xl bg-black p-6 rounded-lg w-[80%] max-w-[800px] h-[600px] relative">
+          <button onClick={closeModal} className="absolute top-2 right-2">
+            <GoEyeClosed />
+          </button>
+          <h3 className="text-lg font-semibold mb-4">PDB Viewer</h3>
+          <div ref={viewerRef} style={{ width: "100%", height: "calc(100% - 60px)" }}></div>
         </div>
-      )}
-    </div>
-  );
+      </div>
+    )}
+  </div>
+);
 }
 
 export default MoleculeTable;

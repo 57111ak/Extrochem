@@ -5,6 +5,7 @@ import LandingPage from "./components/LandingPage";
 import LocomotiveScroll from "locomotive-scroll";
 import Configuration from './components/Configuration';
 import ParentComponent from './components/ParentComponent';
+import MoleculeTable from './components/MoleculeTable';
 
 function App() {
   React.useEffect(() => {
@@ -20,8 +21,9 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/input" element={<ParentComponent/>} />
+          <Route path="/input" element={<ParentComponent />} />
           <Route path="/configuration" element={<Configuration />} />
+          <Route path="/results" element={<MoleculeTable />} /> {/* Add results route */}
         </Routes>
       </div>
     </Router>
