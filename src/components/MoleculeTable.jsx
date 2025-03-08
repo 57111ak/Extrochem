@@ -59,16 +59,24 @@ function MoleculeTable() {
     TopoPSA: "Topo PSA",
   };
 
+  // Descriptor priority list
+  const descriptorPriority = [
+    "LogP",
+    "MolecularWeight",
+    "HBondDonors",
+    "HBondAcceptors",
+    "TopoPSA",
+  ];
+
   // Utility function to extract top descriptors
   const getTopDescriptors = (descriptors, count = 5) => {
-    return Object.entries(descriptors)
-      .sort(([, valueA], [, valueB]) => valueB - valueA) // Sort by value (descending)
-      .slice(0, count) // Take the top `count` entries
-      .map(([key, value]) => {
-        // Use the custom label if available, otherwise use the key
-        const label = descriptorLabels[key] || key;
-        return [label, value];
-      });
+    // Filter descriptors based on priority
+    const prioritizedDescriptors = descriptorPriority
+      .filter((key) => key in descriptors) // Include only keys present in the descriptors object
+      .map((key) => [descriptorLabels[key] || key, descriptors[key]]); // Map to [label, value]
+
+    // Return the top `count` prioritized descriptors
+    return prioritizedDescriptors.slice(0, count);
   };
 
   // Get dynamic headers based on the first molecule's descriptors
