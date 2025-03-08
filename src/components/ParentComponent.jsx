@@ -11,20 +11,33 @@ function ParentComponent() {
   const dispatch = useDispatch();
   const moleculesState = useSelector((state) => state.molecules);
 
-  const generateMolecules = async (pdbFiles) => {
+  const generateMolecules = async (settings) => {
     const formData = new FormData();
-    pdbFiles.forEach((file) => {
-      formData.append("protein_file", file); // Append each PDB file
-    });
-    formData.append("num_molecules", 10); // Adjust as necessary
 
-    // Dispatch the fetchMolecules action
-    await dispatch(fetchMolecules(formData));
-    setActiveTab("RESULTS");
+    // Append PDB files
+    pdbFiles.forEach((file) => formData.append("protein_file", file));
+
+    // Append number of molecules
+    formData.append("num_molecules", settings.numMolecules);
+
+    // Append all configuration settings
+    Object.entries(settings).forEach(([key, [min, max]]) => {
+      if (key !== "numMolecules") {
+        formData.append(`${key}_min`, min);
+        formData.append(`${key}_max`, max);
+      }
+    });
+
+    try {
+      await dispatch(fetchMolecules(formData)).unwrap();
+      setActiveTab("RESULTS");
+    } catch (error) {
+      console.error("Failed to generate molecules:", error);
+    }
   };
 
-  const handleRun = () => {
-    generateMolecules(pdbFiles); // Call the new function instead of setting data directly
+  const handleRun = (settings) => {
+    generateMolecules(settings);
   };
 
   return (
@@ -66,8 +79,12 @@ function ParentComponent() {
 
       {/* Content */}
       <div className="h-full px-6 py-4">
-        {activeTab === "INPUT" && <Input pdbFiles={pdbFiles} setPdbFiles={setPdbFiles} />}
-        {activeTab === "CONFIGURATION" && <Configuration pdbFiles={pdbFiles} onRun={handleRun} />}
+        {activeTab === "INPUT" && (
+          <Input pdbFiles={pdbFiles} setPdbFiles={setPdbFiles} />
+        )}
+        {activeTab === "CONFIGURATION" && (
+          <Configuration pdbFiles={pdbFiles} onRun={handleRun} />
+        )}
         {activeTab === "RESULTS" && moleculesState.data && (
           <MoleculeTable data={moleculesState.data} />
         )}

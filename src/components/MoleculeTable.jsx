@@ -50,11 +50,25 @@ function MoleculeTable() {
     return <p>No molecules generated yet.</p>;
   }
 
+  // Descriptor labels mapping
+  const descriptorLabels = {
+    LogP: "(logp_min, logp_max)",
+    MolecularWeight: "(mw_min, mw_max)",
+    HBondDonors: "(hbd_min, hbd_max)",
+    HBondAcceptors: "(hba_min, hba_max)",
+    TopoPSA: "(tpsa_min, tpsa_max)",
+  };
+
   // Utility function to extract top descriptors
   const getTopDescriptors = (descriptors, count = 5) => {
     return Object.entries(descriptors)
       .sort(([, valueA], [, valueB]) => valueB - valueA) // Sort by value (descending)
-      .slice(0, count); // Take the top `count` entries
+      .slice(0, count) // Take the top `count` entries
+      .map(([key, value]) => {
+        // Use the custom label if available, otherwise use the key
+        const label = descriptorLabels[key] || key;
+        return [label, value];
+      });
   };
 
   // Get dynamic headers based on the first molecule's descriptors

@@ -22,8 +22,9 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/input" element={<ParentComponent />} />
+          <Route path="/results" element={<ParentComponent />} />
           <Route path="/configuration" element={<Configuration />} />
-          <Route path="/results" element={<MoleculeTable />} /> {/* Add results route */}
+          {/* <Route path="/results" element={<MoleculeTable />} /> Add results route */}
         </Routes>
       </div>
     </Router>
