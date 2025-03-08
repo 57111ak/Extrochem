@@ -9,6 +9,16 @@ function Configuration({ pdbFiles, onRun }) {
     hbd: [0, 10],
     hba: [0, 10],
     logP: [-2, 6],
+    tpsa: [0, 100],
+    numO: [0, 10],
+    numN: [0, 10],
+    numS: [0, 10],
+    numCl: [0, 10],
+    numF: [0, 10],
+    rotBonds: [0, 10],
+    maxRing: [0, 10],
+    numStereo: [0, 10],
+    numAromaticRings: [0, 10],
   });
 
   const handleChange = (e, key, index) => {
@@ -39,6 +49,16 @@ function Configuration({ pdbFiles, onRun }) {
   };
 
   const properties = [
+    { label: "TopoPSA", key: "tpsa", range: [0, 100] },
+    { label: "Number of Oxygen atoms", key: "numO", range: [0, 10] },
+    { label: "Number of Nitrogen atoms", key: "numN", range: [0, 10] },
+    { label: "Number of Sulfur atoms", key: "numS", range: [0, 10] },
+    { label: "Number of Chlorine atoms", key: "numCl", range: [0, 10] },
+    { label: "Number of Fluorine atoms", key: "numF", range: [0, 10] },
+    { label: "Number of Rotatable Bonds", key: "rotBonds", range: [0, 10] },
+    { label: "Maximum Ring Size", key: "maxRing", range: [0, 10] },
+    { label: "Number of Stereocenters", key: "numStereo", range: [0, 10] },
+    { label: "Number of Aromatic Rings", key: "numAromaticRings", range: [0, 10] },
     { label: "Molecular Weight (MW)", key: "mw", range: [0, 900] },
     { label: "Hydrogen Bond Donor (HBD)", key: "hbd", range: [0, 10] },
     { label: "Hydrogen Bond Acceptor (HBA)", key: "hba", range: [0, 10] },
