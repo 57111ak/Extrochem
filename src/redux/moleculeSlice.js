@@ -4,6 +4,11 @@ export const fetchMolecules = createAsyncThunk(
   'molecules/fetchMolecules',
   async (formData, { rejectWithValue, dispatch }) => {
     try {
+      // Validate input
+      if (formData.getAll("protein_file").length === 0) {
+        throw new Error("No PDB files selected.");
+      }
+
       const response = await fetch("http://localhost:8000/generate_molecules/", {
         method: "POST",
         body: formData,
@@ -15,7 +20,6 @@ export const fetchMolecules = createAsyncThunk(
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let molecules = [];
 
       while (true) {
         const { done, value } = await reader.read();
@@ -39,7 +43,7 @@ export const fetchMolecules = createAsyncThunk(
         });
       }
 
-      return molecules; // Return the final list of molecules
+      return; // No need to return anything since state is updated incrementally
     } catch (error) {
       return rejectWithValue(error.message || "Failed to fetch molecules");
     }
@@ -81,9 +85,9 @@ const moleculesSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchMolecules.fulfilled, (state, action) => {
+      .addCase(fetchMolecules.fulfilled, (state) => {
         state.loading = false;
-        state.data = action.payload; // Overwrite with the final list
+        // Do not overwrite state.data here
       })
       .addCase(fetchMolecules.rejected, (state, action) => {
         state.loading = false;

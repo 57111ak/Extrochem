@@ -25,34 +25,46 @@ function Configuration({ pdbFiles, onRun }) {
     wHeteroPortion: [0, 150],
     mce18: [0, 200],
   });
+  const [numMolecules, setNumMolecules] = useState(10);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
 
   const handleChange = (e, key, index) => {
     const value = Number(e.target.value);
-    setSettings((prev) => ({
-      ...prev,
-      [key]: prev[key].map((val, i) => (i === index ? value : val)),
-    }));
+    setSettings((prev) => {
+      const newValues = [...prev[key]];
+      newValues[index] = value;
+      if (newValues[0] > newValues[1]) {
+        newValues.sort((a, b) => a - b);
+      }
+      return { ...prev, [key]: newValues };
+    });
   };
 
-  const dispatch = useDispatch();
-
   const handleRun = async () => {
+    setIsLoading(true);
+    setError(null);
     const formData = new FormData();
-    pdbFiles.forEach((file) => {
-      formData.append("protein_file", file); // Append each PDB file
+    
+    pdbFiles.forEach((file) => formData.append("protein_file", file));
+    formData.append("num_molecules", numMolecules);
+
+    Object.entries(settings).forEach(([key, [min, max]]) => {
+      formData.append(`${key}_min`, min);
+      formData.append(`${key}_max`, max);
     });
-    formData.append("num_molecules", 10); 
-    formData.append("logp_min", settings.logP[0]); // Append logP min
-    formData.append("logp_max", settings.logP[1]); // Append logP max
 
     try {
       await dispatch(fetchMolecules(formData)).unwrap();
-      onRun(); // Call the onRun function passed from ParentComponent
-    } catch (error) {
-      console.error("Failed to fetch molecules:", error);
+      onRun();
+    } catch (err) {
+      setError("Failed to fetch molecules. Check inputs and try again.");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
     }
   };
-
   const ro5Properties = [
     {
       header: "RO5-Related Properties",
@@ -107,7 +119,17 @@ function Configuration({ pdbFiles, onRun }) {
   return (
     <div className="w-full  p-6 text-white">
       <h1 className="text-2xl font-bold mb-4">Configuration</h1>
-
+      <div className="mb-6">
+        <label className="block text-sm font-medium mb-2">
+          Number of Molecules:
+          <input
+            type="number"
+            value={numMolecules}
+            onChange={(e) => setNumMolecules(Number(e.target.value))}
+            className="mt-1 p-2 bg-transparent border rounded w-full"
+          />
+        </label>
+      </div>
       {/* RO5 Related Properties */}
       {ro5Properties.map((group) => (
         <div key={group.header} className="mb-6">
@@ -183,13 +205,13 @@ function Configuration({ pdbFiles, onRun }) {
           </div>
         </div>
       ))}
-
+      {error && <div className="text-red-500 mb-4">{error}</div>}
       <div className="flex justify-center mt-6">
         <button
           onClick={handleRun}
           className={`px-4 py-2 border-[1px] border-zinc-500 rounded-full font-light text-sm uppercase hover:bg-white hover:text-black transition `}
         >
-          RUN
+    {isLoading ? 'Running...' : 'RUN'}
         </button>
       </div>
     </div>
