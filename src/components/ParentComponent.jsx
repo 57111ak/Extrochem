@@ -9,17 +9,13 @@ function ParentComponent() {
   const [pdbFiles, setPdbFiles] = useState([]); // State for PDB files
 
   const generateMolecules = async (pdbFiles) => {
+    const formData = new FormData();
+    formData.append("protein_file", pdbFiles[0]); // Assuming the first file is used
+    formData.append("num_molecules", 10); // Adjust as necessary
+
     const response = await fetch("http://localhost:8000/generate_molecules/", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json", // Updated header
-        "Accept": "application/json", // Updated to accept JSON
-        "Cache-Control": "no-cache",
-      },
-      body: JSON.stringify({ // Updated to send JSON
-        protein_file: pdbFiles[0], // Assuming the first file is used
-        num_molecules: 10, // Adjust as necessary
-      }),
+      body: formData, // Send the FormData object
     });
 
     if (response.ok) {
