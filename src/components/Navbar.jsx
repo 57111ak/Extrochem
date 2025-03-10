@@ -2,7 +2,7 @@ import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { Link } from "react-router-dom"; // Import Link and useNavigate
 import { useState } from "react";
 
-function Navbar() {
+function Navbar({ isExpanded }) {
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
 
@@ -14,6 +14,8 @@ function Navbar() {
       setHidden(false);
     }
   });
+
+  if (isExpanded) return null; // Hide Navbar when expanded
 
   return (
     <motion.div
@@ -45,5 +47,4 @@ function Navbar() {
     </motion.div>
   );
 }
-
 export default Navbar;

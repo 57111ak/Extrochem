@@ -8,6 +8,8 @@ import { fetchMolecules } from "../redux/moleculeSlice";
 function ParentComponent() {
   const [activeTab, setActiveTab] = useState("INPUT");
   const [pdbFiles, setPdbFiles] = useState([]); // State for PDB files
+  const [selectedStyle, setSelectedStyle] = useState("cartoon"); // Visualization style
+  const [selectedColorScheme, setSelectedColorScheme] = useState("chainindex"); // Color scheme
   const dispatch = useDispatch();
   const moleculesState = useSelector((state) => state.molecules);
 
@@ -50,7 +52,7 @@ function ParentComponent() {
             <button
               onClick={() => setActiveTab("INPUT")}
               className={`px-4 py-2 border-[1px] border-zinc-500 rounded-full font-light text-sm uppercase hover:bg-white hover:text-black transition ${
-                activeTab === "INPUT" ? "bg-[#7478a0] text-white" : ""
+                activeTab === "INPUT" ? "bg-green-600 text-white" : ""
               }`}
             >
               INPUT
@@ -58,7 +60,7 @@ function ParentComponent() {
             <button
               onClick={() => setActiveTab("CONFIGURATION")}
               className={`px-4 py-2 border-[1px] border-zinc-500 rounded-full font-light text-sm uppercase hover:bg-white hover:text-black transition ${
-                activeTab === "CONFIGURATION" ? "bg-[#7478a0] text-white" : ""
+                activeTab === "CONFIGURATION" ? "bg-green-600 text-white" : ""
               }`}
             >
               CONFIGURATION
@@ -67,7 +69,7 @@ function ParentComponent() {
               <button
                 onClick={() => setActiveTab("RESULTS")}
                 className={`px-4 py-2 border-[1px] border-zinc-500 rounded-full font-light text-sm uppercase hover:bg-white hover:text-black transition ${
-                  activeTab === "RESULTS" ? "bg-[#7478a0] text-white" : ""
+                  activeTab === "RESULTS" ? "bg-green-600 text-white" : ""
                 }`}
               >
                 RESULTS
@@ -80,7 +82,14 @@ function ParentComponent() {
       {/* Content */}
       <div className="h-full px-6 py-4">
         {activeTab === "INPUT" && (
-          <Input pdbFiles={pdbFiles} setPdbFiles={setPdbFiles} />
+          <Input
+            pdbFiles={pdbFiles}
+            setPdbFiles={setPdbFiles}
+            selectedStyle={selectedStyle}
+            setSelectedStyle={setSelectedStyle}
+            selectedColorScheme={selectedColorScheme}
+            setSelectedColorScheme={setSelectedColorScheme}
+          />
         )}
         {activeTab === "CONFIGURATION" && (
           <Configuration pdbFiles={pdbFiles} onRun={handleRun} />

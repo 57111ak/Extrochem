@@ -19,7 +19,7 @@ function PropertyInput({ label, keyName, range, settings, handleChange }) {
             min={range[0]}
             max={range[1]}
             onChange={(e) => handleChange(e, keyName, 1)}
-            className="px-4 py-2 bg-[#0b0a31] border border-zinc-500 rounded"
+            className="px-4 py-2 bg-[#0A2039] border border-zinc-500 rounded"
           />
         </div>
       </div>

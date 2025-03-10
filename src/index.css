@@ -1,45 +1,66 @@
 @import "tailwindcss";
 
-
 @font-face {
     font-family: anzo;
     src: url(./assets/file.woff2);
-  }
-  @font-face {
+}
+@font-face {
     font-family: anzo1;
     src: url(./assets/file1.woff2);
-  }
-  @font-face {
+}
+@font-face {
     font-family: anzo2;
     src: url(./assets/file2.woff2);
-  }
-  
-  *{
+}
+
+* {
     box-sizing: border-box;
     font-family: 'Gilroy-Bold', sans-serif;
-  }  
+}
 
 html,
 body,
 #root,
 .container {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 @keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 canvas {
-  opacity: 0;
-  touch-action: none;
-  animation: fade-in 5s ease 0.5s forwards;
+    opacity: 0;
+    touch-action: none;
+    animation: fade-in 5s ease 0.5s forwards;
+}
+
+.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2000;
+    backdrop-filter: blur(5px);
+    background: rgba(30, 30, 30, 0.9);
+}
+
+.blur {
+    filter: blur(5px);
+    pointer-events: none;
+    transition: filter 0.3s ease;
+}
+
+/* New rule to hide the navbar when expanded */
+.navbar-hidden {
+    display: none;
 }

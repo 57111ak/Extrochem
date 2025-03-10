@@ -1,39 +1,58 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { Stage } from "ngl";
+import { Stage } from "ngl"; // Import NGL Stage
 import { GoEyeClosed } from "react-icons/go";
 import { RxEyeOpen } from "react-icons/rx";
 
 function MoleculeTable() {
   const moleculesState = useSelector((state) => state.molecules);
-  const [selectedPdb, setSelectedPdb] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const viewerRef = useRef(null);
+  const [selectedPdb, setSelectedPdb] = useState(null); // Selected PDB file path
+  const [showModal, setShowModal] = useState(false); // Modal visibility state
+  const viewerRef = useRef(null); // Reference for the NGL viewer container
 
   useEffect(() => {
     console.log("Molecules state:", moleculesState); // Debugging statement
   }, [moleculesState]);
 
+  // Handle click on the <RxEyeOpen /> button
   const handleViewClick = (pdbFile) => {
-    setSelectedPdb(pdbFile);
-    setShowModal(true);
+    setSelectedPdb(pdbFile); // Set the selected PDB file
+    setShowModal(true); // Open the modal
   };
 
+  // Close the modal and reset the NGL stage
   const closeModal = () => {
-    setShowModal(false);
-    setSelectedPdb(null);
+    setShowModal(false); // Close the modal
+    setSelectedPdb(null); // Reset the selected PDB file
+    if (viewerRef.current) {
+      viewerRef.current.innerHTML = ""; // Clear the NGL viewer container
+    }
   };
 
+  // Initialize the NGL stage when a PDB file is selected
   useEffect(() => {
     if (selectedPdb && viewerRef.current) {
-      const stage = new Stage(viewerRef.current, { backgroundColor: "black" });
-      stage.loadFile(selectedPdb).then((component) => {
-        component.addRepresentation("cartoon", { color: "residueindex" });
-        component.autoView();
+      const stage = new Stage(viewerRef.current, {
+        backgroundColor: "black", // Background color
+        cameraType: "perspective", // Camera type
+        fog: true, // Enable fog effect
       });
-      return () => stage.dispose();
+
+      // Load the PDB file into the NGL stage
+      stage.loadFile(selectedPdb).then((component) => {
+        component.addRepresentation("cartoon", {
+          color: "residueindex", // Default color scheme
+          opacity: 0.8,
+        });
+        stage.autoView(); // Auto-adjust the view
+      });
+
+      // Cleanup function to dispose of the stage when the modal is closed
+      return () => {
+        stage.dispose();
+      };
     }
-  }, [selectedPdb]);
+  }, [selectedPdb]); // Re-run this effect when `selectedPdb` changes
 
   // Show loading message if data is still being fetched
   if (moleculesState.loading && moleculesState.data.length === 0) {
@@ -139,13 +158,17 @@ function MoleculeTable() {
         </tbody>
       </table>
 
+      {/* Modal for PDB Viewer */}
       {showModal && (
         <div className="fixed inset-0 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="backdrop-blur-3xl bg-black p-6 rounded-lg w-[80%] max-w-[800px] h-[600px] relative">
-            <button onClick={closeModal} className="absolute top-2 right-2">
+          <div className="bg-black p-6 rounded-lg w-[80%] max-w-[800px] h-[600px] relative">
+            <button
+              onClick={closeModal}
+              className="absolute top-2 right-2 text-white hover:text-red-500"
+            >
               <GoEyeClosed />
             </button>
-            <h3 className="text-lg font-semibold mb-4">PDB Viewer</h3>
+            <h3 className="text-lg font-semibold mb-4 text-white">PDB Viewer</h3>
             <div
               ref={viewerRef}
               style={{ width: "100%", height: "calc(100% - 60px)" }}
